@@ -31,5 +31,16 @@ assets/temp/
 # Ignore local project data
 projects/*.local.json
 
+# Ignore all contents of the projects folder except .gitkeep
+projects/*
+!projects/.gitkeep
+
 # Ignore test assets
 /test-assets/
+
+# Ignore all contents of the assets folder except references/ and .gitkeep
+assets/*
+!assets/.gitkeep
+!assets/references/
+assets/references/*
+!assets/references/.gitkeep
