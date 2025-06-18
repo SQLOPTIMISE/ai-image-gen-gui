@@ -1,0 +1,13 @@
+{
+  "name": "Mission 1",
+  "description": "This is the first mission, succeed and we're good to go. Failure means utter desolation.",
+  "palette": [
+    "black",
+    "gold"
+  ],
+  "sloganTemplates": [
+    "Mission Impossible"
+  ],
+  "created": "2025-06-18T01:23:36.390Z",
+  "updated": "2025-06-18T01:23:36.390Z"
+}

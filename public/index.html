@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generation GUI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Sidebar -->
+            <div class="col-md-3 bg-light border-end p-0">
+                <div class="d-flex flex-column h-100">
+                    <!-- Header -->
+                    <div class="p-3 border-bottom">
+                        <h5 class="mb-0"><i class="bi bi-palette"></i> AI Image Gen</h5>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-primary" id="newProjectBtn">
+                                <i class="bi bi-plus"></i> New Project
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex-grow-1 overflow-auto">
+                        <!-- Projects List -->
+                        <div class="p-3">
+                            <h6 class="text-muted mb-2">Projects</h6>
+                            <div id="projectsList" class="list-group list-group-flush">
+                                <!-- Projects will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Campaigns List -->
+                        <div class="p-3 border-top" id="campaignsSection" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-muted mb-0">Campaigns</h6>
+                                <button class="btn btn-sm btn-outline-primary" id="newCampaignBtn">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <div id="campaignsList" class="list-group list-group-flush">
+                                <!-- Campaigns will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Requests List -->
+                        <div class="p-3 border-top" id="requestsSection" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-muted mb-0">Requests</h6>
+                                <button class="btn btn-sm btn-outline-primary" id="newRequestBtn">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <div id="requestsList" class="list-group list-group-flush">
+                                <!-- Requests will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="p-3 border-top">
+                        <div class="dropdown">
+                            <div id="statusIndicator" class="d-flex align-items-center justify-content-between cursor-pointer" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="d-flex align-items-center">
+                                    <div class="spinner-border spinner-border-sm text-secondary me-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <small class="text-muted">Checking connection...</small>
+                                </div>
+                                <i class="bi bi-info-circle-fill text-muted"></i>
+                            </div>
+                            
+                            <!-- Status Details Dropdown -->
+                            <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                                <div class="px-3 py-2">
+                                    <h6 class="dropdown-header">System Status</h6>
+                                    <div id="statusDetails">
+                                        <p class="mb-2"><strong>Checking system status...</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 p-0">
+                <div class="d-flex flex-column h-100">
+                    <!-- Welcome Screen -->
+                    <div id="welcomeScreen" class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                            <i class="bi bi-palette display-1 text-muted"></i>
+                            <h3 class="mt-3">Welcome to AI Image Generation GUI</h3>
+                            <p class="text-muted">Create a project to get started</p>
+                            
+                            <!-- Status Info Banner -->
+                            <div id="welcomeBanner" class="mt-4 mx-auto" style="max-width: 500px;">
+                                <!-- Banner content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Work Area -->
+                    <div id="mainWorkArea" class="flex-grow-1 d-flex flex-column" style="display: none;">
+                        <!-- Context Header -->
+                        <div class="p-3 border-bottom bg-white">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0" id="breadcrumb">
+                                    <li class="breadcrumb-item">Project</li>
+                                </ol>
+                            </nav>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="flex-grow-1 d-flex">
+                            <!-- Left Panel - Request Details -->
+                            <div class="flex-grow-1 p-3">
+                                <!-- Project/Campaign Context -->
+                                <div id="contextDisplay" class="mb-4">
+                                    <!-- Context will be displayed here -->
+                                </div>
+
+                                <!-- Request Editor -->
+                                <div id="requestEditor" class="mb-4">
+                                    <h6>Raw Prompt</h6>
+                                    <textarea id="rawPromptInput" class="form-control mb-3" rows="4" placeholder="Enter your image generation prompt..."></textarea>
+                                    
+                                    <div class="d-flex gap-2 mb-3">
+                                        <button id="generateBtn" class="btn btn-primary">
+                                            <i class="bi bi-magic"></i> Generate
+                                        </button>
+                                        <button id="saveRequestBtn" class="btn btn-outline-secondary">
+                                            <i class="bi bi-save"></i> Save
+                                        </button>
+                                    </div>
+
+                                    <!-- Feedback Section -->
+                                    <div id="feedbackSection" style="display: none;">
+                                        <h6>Feedback</h6>
+                                        <textarea id="feedbackInput" class="form-control mb-2" rows="2" placeholder="Provide feedback for improvement..."></textarea>
+                                        <button id="regenerateBtn" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-arrow-repeat"></i> Regenerate with Feedback
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Results Gallery -->
+                                <div id="resultsGallery">
+                                    <h6>Results</h6>
+                                    <div id="imageResults" class="row g-3">
+                                        <!-- Generated images will appear here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Panel - References -->
+                            <div class="border-start bg-light" style="width: 300px;">
+                                <div class="p-3">
+                                    <h6>Reference Library</h6>
+                                    <div id="referencesPanel">
+                                        <div class="text-center text-muted py-4">
+                                            <i class="bi bi-images"></i>
+                                            <p class="mb-0 mt-2">No references yet</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- New Project Modal -->
+    <div class="modal fade" id="newProjectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newProjectForm">
+                        <!-- Project Details -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="projectName" class="form-label">Project Name</label>
+                                    <input type="text" class="form-control" id="projectName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="clientName" class="form-label">Client Name</label>
+                                    <input type="text" class="form-control" id="clientName" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Client Contact Information -->
+                        <div class="mb-3">
+                            <h6 class="mb-2">Client Contact Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label for="clientEmail" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="clientEmail">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label for="clientPhone" class="form-label">Phone</label>
+                                        <input type="text" class="form-control" id="clientPhone">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label for="clientCompany" class="form-label">Company</label>
+                                        <input type="text" class="form-control" id="clientCompany">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <label for="clientNotes" class="form-label">Notes</label>
+                                        <input type="text" class="form-control" id="clientNotes">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project Dates -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="projectStartDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="projectStartDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="projectEndDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="projectEndDate">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project Description -->
+                        <div class="mb-3">
+                            <label for="projectDescription" class="form-label">Project Description</label>
+                            <textarea class="form-control" id="projectDescription" rows="3" placeholder="Describe the project scope and objectives..." required></textarea>
+                        </div>
+
+                        <!-- Style Guide -->
+                        <div class="mb-3">
+                            <label for="styleGuide" class="form-label">Style Guide</label>
+                            <textarea class="form-control" id="styleGuide" rows="3" placeholder="Describe the visual style, brand guidelines, and aesthetic preferences..." required></textarea>
+                        </div>
+
+                        <!-- Reference Images Upload -->
+                        <div class="mb-3">
+                            <label for="projectReferenceImages" class="form-label">Reference Images (optional)</label>
+                            <input type="file" class="form-control" id="projectReferenceImages" accept="image/*" multiple>
+                            <div class="form-text">Upload images that represent the desired style or visual direction</div>
+                        </div>
+
+                        <!-- Text References -->
+                        <div class="mb-3">
+                            <label for="references" class="form-label">Text References (optional)</label>
+                            <textarea class="form-control" id="references" rows="2" placeholder="Keywords or reference image descriptors (one per line)"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createProjectBtn">Create Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Campaign Modal -->
+    <div class="modal fade" id="newCampaignModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Campaign</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCampaignForm">
+                        <!-- Campaign Basic Info -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="campaignName" class="form-label">Campaign Name</label>
+                                    <input type="text" class="form-control" id="campaignName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="campaignType" class="form-label">Campaign Type</label>
+                                    <select class="form-control" id="campaignType">
+                                        <option value="Other">Other</option>
+                                        <option value="Anniversary">Anniversary</option>
+                                        <option value="Product Launch">Product Launch</option>
+                                        <option value="Seasonal">Seasonal</option>
+                                        <option value="Brand Awareness">Brand Awareness</option>
+                                        <option value="Event">Event</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campaign Description -->
+                        <div class="mb-3">
+                            <label for="campaignDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="campaignDescription" rows="3" placeholder="Describe the campaign theme and objectives..." required></textarea>
+                        </div>
+
+                        <!-- Campaign Dates and Recurrence -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="campaignRecurrence" class="form-label">Recurrence</label>
+                                    <select class="form-control" id="campaignRecurrence">
+                                        <option value="one-time">One-time</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="campaignStartDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="campaignStartDate">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="campaignEndDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="campaignEndDate">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Target Audience -->
+                        <div class="mb-3">
+                            <label for="targetAudience" class="form-label">Target Audience</label>
+                            <textarea class="form-control" id="targetAudience" rows="2" placeholder="Describe the target demographic and audience characteristics..."></textarea>
+                        </div>
+
+                        <!-- Image Requirements -->
+                        <div class="mb-3">
+                            <label for="imageRequirements" class="form-label">Image Requirements</label>
+                            <textarea class="form-control" id="imageRequirements" rows="2" placeholder="List specific image requirements (one per line)"></textarea>
+                            <div class="form-text">e.g., Include company logo, Use specific colors, Show product features</div>
+                        </div>
+
+                        <!-- Image Specifications -->
+                        <div class="mb-3">
+                            <h6 class="mb-2">Image Specifications</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label for="aspectRatio" class="form-label">Aspect Ratio</label>
+                                        <input type="text" class="form-control" id="aspectRatio" placeholder="e.g., 16:9, 1:1, 4:3">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label for="resolution" class="form-label">Resolution</label>
+                                        <input type="text" class="form-control" id="resolution" placeholder="e.g., 1920x1080, 1080x1080">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-2">
+                                        <label for="format" class="form-label">Format</label>
+                                        <input type="text" class="form-control" id="format" placeholder="e.g., PNG, JPEG, WebP">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="specNotes" class="form-label">Additional Notes</label>
+                                <input type="text" class="form-control" id="specNotes" placeholder="Any other technical specifications">
+                            </div>
+                        </div>
+
+                        <!-- Color Palette -->
+                        <div class="mb-3">
+                            <label for="palette" class="form-label">Color Palette</label>
+                            <input type="text" class="form-control" id="palette" placeholder="e.g., blue, white, gold (comma-separated)">
+                        </div>
+
+                        <!-- Slogan Templates -->
+                        <div class="mb-3">
+                            <label for="sloganTemplates" class="form-label">Slogan Templates</label>
+                            <textarea class="form-control" id="sloganTemplates" rows="2" placeholder="Template phrases or slogans (one per line)"></textarea>
+                        </div>
+
+                        <!-- Reference Images Upload -->
+                        <div class="mb-3">
+                            <label for="campaignReferenceImages" class="form-label">Campaign Reference Images (optional)</label>
+                            <input type="file" class="form-control" id="campaignReferenceImages" accept="image/*" multiple>
+                            <div class="form-text">Upload images specific to this campaign's style or theme</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createCampaignBtn">Create Campaign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Request Modal -->
+    <div class="modal fade" id="newRequestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newRequestForm">
+                        <div class="mb-3">
+                            <label for="requestPrompt" class="form-label">Raw Prompt</label>
+                            <textarea class="form-control" id="requestPrompt" rows="4" placeholder="Enter your image generation prompt..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createRequestBtn">Create Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optimized Prompt Preview Modal -->
+    <div class="modal fade" id="promptPreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye"></i> Optimized Prompt Preview
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="promptBreakdown">
+                        <!-- Prompt breakdown will be populated here -->
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="finalPromptPreview" class="form-label"><strong>Final Optimized Prompt:</strong></label>
+                        <textarea id="finalPromptPreview" class="form-control" rows="4" readonly></textarea>
+                        <div class="form-text">This is what will be sent to the AI image generator.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-pencil"></i> Edit Prompt
+                    </button>
+                    <button type="button" class="btn btn-primary" id="proceedWithGenerationBtn">
+                        <i class="bi bi-magic"></i> Generate Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <h6 id="loadingMessage">Processing...</h6>
+                    <div class="progress mt-3" style="height: 6px;">
+                        <div id="loadingProgress" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small id="loadingDetail" class="text-muted mt-2">Initializing...</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+/* Custom styles for AI Image Generation GUI */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+/* Sidebar styles */
+.list-group-item {
+    border: none !important;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef;
+}
+
+.list-group-item.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.list-group-item.active:hover {
+    background-color: #0b5ed7;
+}
+
+/* Status indicators */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.status-pending {
+    background-color: #6c757d;
+}
+
+.status-generating {
+    background-color: #fd7e14;
+    animation: pulse 2s infinite;
+}
+
+.status-succeeded {
+    background-color: #198754;
+}
+
+.status-needs-feedback {
+    background-color: #dc3545;
+}
+
+.status-failed {
+    background-color: #6f42c1;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Context display */
+.context-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.context-card h6 {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+}
+
+.context-card p {
+    margin-bottom: 0.25rem;
+}
+
+/* Image gallery styles */
+.image-result-card {
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.image-result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.image-result-card.approved {
+    border-color: #198754;
+}
+
+.image-result-card.rejected {
+    border-color: #dc3545;
+}
+
+.image-result {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.image-actions {
+    padding: 0.75rem;
+    background: white;
+}
+
+.btn-approve {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-approve:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+.btn-reject {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-reject:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+/* Reference panel styles */
+.reference-item {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.reference-item:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.reference-item.pinned {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.125rem rgba(255, 193, 7, 0.25);
+}
+
+.reference-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.reference-content {
+    padding: 0.75rem;
+}
+
+.reference-prompt {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pin-toggle {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0;
+}
+
+.reference-item:hover .pin-toggle {
+    opacity: 1;
+}
+
+.pin-toggle.pinned {
+    background: #ffc107;
+    color: #000;
+    opacity: 1;
+}
+
+/* Form enhancements */
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Breadcrumb styling */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #6c757d;
+}
+
+/* Loading states */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid .row .col-md-3 {
+        position: absolute;
+        z-index: 1001;
+        height: 100%;
+        width: 300px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .container-fluid .row .col-md-3.show {
+        transform: translateX(0);
+    }
+    
+    .col-md-9 {
+        width: 100% !important;
+    }
+}
+
+/* Utility classes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Animation for new items */
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slide-in-up {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Custom scrollbar */
+.overflow-auto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 3px;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}
+
+/* Loading spinner customization */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Success/Error states */
+.alert-floating {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    min-width: 300px;
+}
+
+/* Image modal styles */
+.modal-image {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+/* Connection status */
+.connection-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.connection-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6c757d;
+}
+
+.connection-dot.connected {
+    background-color: #198754;
+}
+
+.connection-dot.disconnected {
+    background-color: #dc3545;
+}
+
+/* Cursor pointer for clickable elements */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Status dropdown styles */
+.dropdown-menu {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.175);
+}
+
+.status-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.status-detail-item:last-child {
+    border-bottom: none;
+}
+
+.status-badge-sm {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+}
+
+.external-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.external-link:hover {
+    text-decoration: underline;
+}
+
+.quota-warning {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+    color: white;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.demo-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+/* Prompt preview styles */
+.prompt-breakdown-item {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.prompt-breakdown-item h6 {
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.prompt-breakdown-item.project {
+    border-left-color: #198754;
+}
+
+.prompt-breakdown-item.project h6 {
+    color: #198754;
+}
+
+.prompt-breakdown-item.campaign {
+    border-left-color: #fd7e14;
+}
+
+.prompt-breakdown-item.campaign h6 {
+    color: #fd7e14;
+}
+
+.prompt-breakdown-item.references {
+    border-left-color: #6f42c1;
+}
+
+.prompt-breakdown-item.references h6 {
+    color: #6f42c1;
+}
+
+.prompt-breakdown-item.feedback {
+    border-left-color: #dc3545;
+}
+
+.prompt-breakdown-item.feedback h6 {
+    color: #dc3545;
+}
+
+/* Enhanced progress bar */
+.progress {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Reference level indicators */
+.reference-level-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+}
+
+.reference-level-project {
+    background-color: #198754;
+    color: white;
+}
+
+.reference-level-campaign {
+    background-color: #fd7e14;
+    color: white;
+}
