@@ -117,14 +117,18 @@ class OpenAIService {
           quality: this.imageQuality,
           timestamp: new Date().toISOString()
         }
-      };
-    } catch (error) {
+      };    } catch (error) {
       console.error('Error generating image:', error);
       
-      // If demo mode is enabled and we have any API issues, return a demo image
-      if (process.env.DEMO_MODE === 'true' && (error.status === 429 || error.status === 400 || error.code === 'insufficient_quota' || error.type === 'image_generation_user_error')) {
-        console.log('Using demo mode due to API error...');
+      // If demo mode is enabled, return a demo image for any API error
+      if (process.env.DEMO_MODE === 'true') {
+        console.log('Using demo mode due to API error or insufficient credits...');
         return this.generateDemoImage(optimizedPrompt);
+      }
+      
+      // If not in demo mode, provide specific error messages
+      if (error.status === 429 || error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your billing settings or enable demo mode.');
       }
       
       throw new Error(`Image generation failed: ${error.message}`);

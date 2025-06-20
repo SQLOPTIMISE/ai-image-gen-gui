@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const FileService = require('./services/fileService');
 const OpenAIService = require('./services/openaiService');
 const UploadService = require('./services/uploadService');
+const ScheduledTasksService = require('./services/scheduledTasksService');
 const { createDefaultProject, createDefaultCampaign, createDefaultRequest } = require('./models/schemas');
 
 const app = express();
@@ -16,6 +17,7 @@ const port = process.env.PORT || 3000;
 const fileService = new FileService();
 const openaiService = new OpenAIService();
 const uploadService = new UploadService();
+const scheduledTasksService = new ScheduledTasksService();
 
 // Middleware
 app.use(cors());
@@ -759,6 +761,52 @@ app.post('/api/projects/:projectName/campaigns/:campaignName/requests/:requestId
   }
 });
 
+// Scheduled Tasks API
+app.get('/api/scheduled-tasks', (req, res) => {
+  try {
+    const status = scheduledTasksService.getTaskStatus();
+    res.json({
+      success: true,
+      tasks: status
+    });
+  } catch (error) {
+    console.error('Error getting scheduled tasks status:', error);
+    res.status(500).json({ error: 'Failed to get scheduled tasks status' });
+  }
+});
+
+app.post('/api/scheduled-tasks/:name/start', (req, res) => {
+  try {
+    const { name } = req.params;
+    const success = scheduledTasksService.startTask(name);
+    
+    if (success) {
+      res.json({ success: true, message: `Task ${name} started` });
+    } else {
+      res.status(404).json({ error: `Task ${name} not found` });
+    }
+  } catch (error) {
+    console.error('Error starting scheduled task:', error);
+    res.status(500).json({ error: 'Failed to start scheduled task' });
+  }
+});
+
+app.post('/api/scheduled-tasks/:name/stop', (req, res) => {
+  try {
+    const { name } = req.params;
+    const success = scheduledTasksService.stopTask(name);
+    
+    if (success) {
+      res.json({ success: true, message: `Task ${name} stopped` });
+    } else {
+      res.status(404).json({ error: `Task ${name} not found` });
+    }
+  } catch (error) {
+    console.error('Error stopping scheduled task:', error);
+    res.status(500).json({ error: 'Failed to stop scheduled task' });
+  }
+});
+
 // Health check and API info
 app.get('/api/health', async (req, res) => {
   try {
@@ -797,6 +845,10 @@ app.listen(port, () => {
   console.log(`AI Image Generation GUI server running on http://localhost:${port}`);
   console.log('Environment:', process.env.NODE_ENV);
   console.log('OpenAI API Key configured:', !!process.env.OPENAI_API_KEY);
+  
+  // Initialize and start scheduled tasks
+  scheduledTasksService.initialize();
+  scheduledTasksService.startAllTasks();
 });
 
 module.exports = app;
