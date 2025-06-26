@@ -10,6 +10,7 @@ class ImageGenApp {
     }
 
     async init() {
+        this.initializeTheme();
         this.setupEventListeners();
         await this.checkHealth();
         await this.loadProjects();
@@ -27,6 +28,10 @@ class ImageGenApp {
 
         document.getElementById('newRequestBtn').addEventListener('click', () => {
             this.showNewRequestModal();
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.showSettingsModal();
         });
 
         // Form submissions
@@ -57,6 +62,15 @@ class ImageGenApp {
 
         document.getElementById('saveRequestBtn').addEventListener('click', () => {
             this.saveCurrentRequest();
+        });
+
+        // Settings controls
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            this.saveSettings();
+        });
+
+        document.getElementById('toggleApiKey').addEventListener('click', () => {
+            this.toggleApiKeyVisibility();
         });
 
         // Prompt input auto-save
@@ -683,6 +697,119 @@ class ImageGenApp {
         const modal = new bootstrap.Modal(document.getElementById('newRequestModal'));
         document.getElementById('newRequestForm').reset();
         modal.show();
+    }
+
+    showSettingsModal() {
+        this.loadSettings();
+        const modal = new bootstrap.Modal(document.getElementById('settingsModal'));
+        modal.show();
+    }
+
+    // Settings management
+    loadSettings() {
+        // Load settings from localStorage
+        const settings = this.getSettings();
+        
+        // Populate form fields
+        document.getElementById('openaiApiKey').value = settings.apiKey || '';
+        document.getElementById('defaultModel').value = settings.defaultModel || 'dall-e-3';
+        document.getElementById('defaultImageSize').value = settings.defaultImageSize || '1024x1024';
+        document.getElementById('defaultQuality').value = settings.defaultQuality || 'standard';
+        document.getElementById('themeSelect').value = settings.theme || 'light';
+        document.getElementById('autoSaveRequests').checked = settings.autoSaveRequests !== false;
+        document.getElementById('showPromptPreview').checked = settings.showPromptPreview !== false;
+    }
+
+    getSettings() {
+        const stored = localStorage.getItem('imageGenSettings');
+        return stored ? JSON.parse(stored) : {};
+    }
+
+    saveSettings() {
+        try {
+            const settings = {
+                apiKey: document.getElementById('openaiApiKey').value.trim(),
+                defaultModel: document.getElementById('defaultModel').value,
+                defaultImageSize: document.getElementById('defaultImageSize').value,
+                defaultQuality: document.getElementById('defaultQuality').value,
+                theme: document.getElementById('themeSelect').value,
+                autoSaveRequests: document.getElementById('autoSaveRequests').checked,
+                showPromptPreview: document.getElementById('showPromptPreview').checked
+            };
+
+            localStorage.setItem('imageGenSettings', JSON.stringify(settings));
+            
+            // Apply theme change
+            this.applyTheme(settings.theme);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+            modal.hide();
+            
+            this.showAlert('Settings saved successfully', 'success');
+            
+            // Refresh health check if API key was changed
+            this.checkHealth();
+            
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            this.showAlert('Error saving settings', 'danger');
+        }
+    }
+
+    toggleApiKeyVisibility() {
+        const input = document.getElementById('openaiApiKey');
+        const icon = document.querySelector('#toggleApiKey i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    // Theme management
+    initializeTheme() {
+        const settings = this.getSettings();
+        const theme = settings.theme || 'light';
+        this.applyTheme(theme);
+    }
+
+    applyTheme(theme) {
+        const root = document.documentElement;
+        console.log('Applying theme:', theme);
+        
+        if (theme === 'auto') {
+            // Use system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const actualTheme = prefersDark ? 'dark' : 'light';
+            root.setAttribute('data-theme', actualTheme);
+            console.log('Auto theme applied:', actualTheme);
+            
+            // Listen for system theme changes
+            if (!this.mediaQueryListener) {
+                this.mediaQueryListener = window.matchMedia('(prefers-color-scheme: dark)');
+                this.mediaQueryListener.addEventListener('change', (e) => {
+                    const currentSettings = this.getSettings();
+                    if (currentSettings.theme === 'auto') {
+                        const newTheme = e.matches ? 'dark' : 'light';
+                        root.setAttribute('data-theme', newTheme);
+                        console.log('System theme changed to:', newTheme);
+                    }
+                });
+            }
+        } else {
+            // Use explicit theme
+            root.setAttribute('data-theme', theme);
+            console.log('Explicit theme applied:', theme);
+            
+            // Remove system listener if it exists
+            if (this.mediaQueryListener) {
+                this.mediaQueryListener.removeEventListener('change', this.handleSystemThemeChange);
+            }
+        }
     }
 
     // CRUD operations
